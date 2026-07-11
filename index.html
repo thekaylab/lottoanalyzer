@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="LottoLens — AI 기반 로또 번호 분석 및 추천 서비스. 역대 당첨 데이터 통계 분석으로 당신만의 번호를 찾아보세요." />
+  <meta name="theme-color" content="#0d0d1a" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="LottoLens — 로또 번호 분석기" />
+  <meta property="og:description" content="AI 기반 로또 번호 분석 및 추천 서비스" />
+  <meta property="og:type"        content="website" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎱</text></svg>" />
+
+  <!-- Google Fonts: Pretendard fallback via Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <title>LottoLens — 로또 번호 분석기</title>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════
+       SKIP NAVIGATION
+  ═══════════════════════════════════════════════ -->
+  <a href="#main" class="skip-nav">본문 바로가기</a>
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR (데스크탑 좌측 네비게이션)
+  ═══════════════════════════════════════════════ -->
+  <aside id="sidebar" class="sidebar" aria-label="사이드바 메뉴">
+
+    <!-- 로고: Kay Lab + LottoLens -->
+    <div class="sidebar-logo">
+      <a href="#home" class="logo-link" data-page="home" aria-label="LottoLens 홈">
+        <!-- Kay Lab 이미지 로고 -->
+        <img
+          src="../kay_lab_logo_transparent.png"
+          alt="Kay Lab"
+          class="logo-img logo-img--kaylab"
+          loading="eager"
+        />
+        <!-- 구분선 -->
+        <span class="logo-divider" aria-hidden="true"></span>
+        <!-- LottoLens 텍스트 로고 -->
+        <span class="logo-lottolens" aria-label="LottoLens">
+          <span class="logo-ball" aria-hidden="true">🎱</span>
+          <span class="logo-text">Lotto<strong>Lens</strong></span>
+        </span>
+      </a>
+    </div>
+
+    <!-- 사이드바 네비게이션 -->
+    <nav class="sidebar-nav" aria-label="주요 메뉴">
+      <ul class="nav-list" role="list">
+
+        <li class="nav-item">
+          <a href="#home" class="nav-link active" data-page="home" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">
+              <!-- Home Icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+                <path d="M9 21V12h6v9"/>
+              </svg>
+            </span>
+            <span class="nav-label">홈</span>
+            <span class="nav-active-bar" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#analysis" class="nav-link" data-page="analysis">
+            <span class="nav-icon" aria-hidden="true">
+              <!-- Bar Chart Icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6"  y1="20" x2="6"  y2="14"/>
+                <line x1="2"  y1="20" x2="22" y2="20"/>
+              </svg>
+            </span>
+            <span class="nav-label">번호분석</span>
+            <span class="nav-active-bar" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#recommend" class="nav-link" data-page="recommend">
+            <span class="nav-icon" aria-hidden="true">
+              <!-- Sparkles / Star Icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+              </svg>
+            </span>
+            <span class="nav-label">추천번호</span>
+            <span class="nav-active-bar" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#stats" class="nav-link" data-page="stats">
+            <span class="nav-icon" aria-hidden="true">
+              <!-- Pie Chart Icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.21 15.89A10 10 0 118 2.83"/>
+                <path d="M22 12A10 10 0 0012 2v10z"/>
+              </svg>
+            </span>
+            <span class="nav-label">통계</span>
+            <span class="nav-active-bar" aria-hidden="true"></span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#settings" class="nav-link" data-page="settings">
+            <span class="nav-icon" aria-hidden="true">
+              <!-- Settings Icon -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+              </svg>
+            </span>
+            <span class="nav-label">설정</span>
+            <span class="nav-active-bar" aria-hidden="true"></span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- 사이드바 하단: 테마 토글 -->
+    <div class="sidebar-footer">
+      <div class="theme-toggle-wrap">
+        <!-- 달 아이콘 (다크) -->
+        <span class="theme-mode-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </span>
+        <!-- 슬라이드 토글 스위치 -->
+        <label class="theme-slide-label" aria-label="라이트/다크 모드 전환">
+          <input
+            type="checkbox"
+            id="theme-toggle"
+            class="theme-slide-input"
+            aria-label="라이트 모드 켜기"
+          />
+          <span class="theme-slide-track">
+            <span class="theme-slide-thumb"></span>
+          </span>
+        </label>
+        <!-- 해 아이콘 (라이트) -->
+        <span class="theme-mode-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+  </aside>
+  <!-- /SIDEBAR -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       TOP HEADER (모바일 + 데스크탑 공통)
+  ═══════════════════════════════════════════════ -->
+  <header class="top-header" role="banner">
+    <div class="header-inner">
+
+      <!-- 모바일 햄버거 -->
+      <button
+        id="hamburger-btn"
+        class="hamburger-btn"
+        aria-label="메뉴 열기"
+        aria-expanded="false"
+        aria-controls="sidebar"
+      >
+        <span class="ham-bar"></span>
+        <span class="ham-bar"></span>
+        <span class="ham-bar"></span>
+      </button>
+
+      <!-- 모바일 로고: Kay Lab + LottoLens -->
+      <a href="#home" class="mobile-logo" data-page="home" aria-label="LottoLens 홈">
+        <img src="../kay_lab_logo_transparent.png" alt="Kay Lab" class="mobile-logo-img logo-img--kaylab" />
+        <span class="mobile-logo-divider" aria-hidden="true"></span>
+        <span class="mobile-lottolens" aria-label="LottoLens">
+          <span aria-hidden="true">🎱</span>
+          <span class="mobile-lottolens-text">Lotto<strong>Lens</strong></span>
+        </span>
+      </a>
+
+      <!-- 헤더 우측 -->
+      <div class="header-right">
+
+        <!-- 데이터 업데이트 상태 -->
+        <div class="update-status" role="status" aria-live="polite" aria-label="데이터 상태">
+          <span class="status-dot status-dot--live" aria-hidden="true"></span>
+          <span class="status-text">최신</span>
+        </div>
+
+        <!-- 모바일 테마 토글 버튼 -->
+        <button id="theme-toggle-mobile" class="theme-toggle-mobile-btn" aria-label="테마 변경">
+          <!-- 달·해 아이콘은 JS로 전환 -->
+          <svg id="mobile-theme-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+
+      </div>
+    </div>
+  </header>
+  <!-- /HEADER -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR OVERLAY (모바일)
+  ═══════════════════════════════════════════════ -->
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN WRAPPER
+  ═══════════════════════════════════════════════ -->
+  <div class="layout-wrapper">
+    <main id="main" class="main-content" tabindex="-1">
+
+
+      <!-- ─────────────────────────────────────────
+           홈 페이지 (기본 표시)
+      ───────────────────────────────────────── -->
+      <section id="page-home" class="page active" aria-label="홈">
+
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+          <div class="page-header-text">
+            <h1 class="page-title">대시보드</h1>
+            <p class="page-subtitle">최신 로또 데이터와 AI 분석 결과를 한눈에 확인하세요</p>
+          </div>
+          <div class="page-header-meta">
+            <span class="round-badge">제 <strong id="current-round">—</strong> 회차</span>
+          </div>
+        </div>
+
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             대시보드 그리드
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <div class="dashboard-grid">
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 1: 최신 회차 정보          │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--latest-round" aria-labelledby="card1-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--purple" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </span>
+                <h2 id="card1-title" class="card-title">최신 회차 정보</h2>
+              </div>
+              <span class="card-badge card-badge--live">LIVE</span>
+            </div>
+
+            <div class="card-body">
+              <!-- JS가 getElementById()로 각 값을 업데이트 -->
+              <div id="round-info-grid" class="round-info-grid">
+                <div class="round-info-item">
+                  <span class="info-label">회차</span>
+                  <strong id="info-round" class="info-value info-value--xl" aria-live="polite">로딩 중…</strong>
+                </div>
+                <div class="round-info-item">
+                  <span class="info-label">추첨일</span>
+                  <strong id="info-date" class="info-value" aria-live="polite">—</strong>
+                </div>
+                <div class="round-info-item">
+                  <span class="info-label">1등 당첨금</span>
+                  <strong id="info-prize" class="info-value info-value--gold" aria-live="polite">—</strong>
+                </div>
+                <div class="round-info-item">
+                  <span class="info-label">1등 당첨자</span>
+                  <strong id="info-winners" class="info-value" aria-live="polite">—</strong>
+                </div>
+                <div class="round-info-item">
+                  <span class="info-label">총 판매액</span>
+                  <strong id="info-sales" class="info-value" aria-live="polite">—</strong>
+                </div>
+                <div class="round-info-item">
+                  <span class="info-label">다음 추첨</span>
+                  <strong id="info-dday" class="info-value info-value--cyan" aria-live="polite">—</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
+
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 2: 최근 당첨번호           │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--winning-numbers" aria-labelledby="card2-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--gold" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4l3 3"/>
+                  </svg>
+                </span>
+                <h2 id="card2-title" class="card-title">최근 당첨번호</h2>
+              </div>
+              <!-- 회차 배지: JS가 업데이트 -->
+              <span id="winning-round-badge" class="card-badge" aria-live="polite">로딩 중</span>
+            </div>
+
+            <div class="card-body">
+              <!-- 당첨번호 볼 행: JS가 renderBallRow()로 재렌더링 -->
+              <div class="ball-group">
+                <div id="winning-ball-row" class="ball-row"
+                     role="list"
+                     aria-label="최신 회차 당첨 번호"
+                     aria-live="polite">
+                  <!-- 로딩 플레이스홀더 -->
+                  <div class="lotto-ball ball--placeholder">?</div>
+                  <div class="lotto-ball ball--placeholder">?</div>
+                  <div class="lotto-ball ball--placeholder">?</div>
+                  <div class="lotto-ball ball--placeholder">?</div>
+                  <div class="lotto-ball ball--placeholder">?</div>
+                  <div class="lotto-ball ball--placeholder">?</div>
+                  <span class="ball-separator">+</span>
+                  <div class="lotto-ball ball--placeholder">?</div>
+                </div>
+              </div>
+
+              <!-- 이전 회차 미니 복록: JS가 재렌더링 -->
+              <div id="prev-rounds-list" class="prev-rounds" aria-label="이전 회차 당첨번호" aria-live="polite">
+                <!-- 로딩 플레이스홀더 -->
+                <div class="prev-round-item">
+                  <span class="prev-round-label">—회</span>
+                  <div class="mini-balls">
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                  </div>
+                </div>
+                <div class="prev-round-item">
+                  <span class="prev-round-label">—회</span>
+                  <div class="mini-balls">
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                    <div class="mini-ball mini--gray">?</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 3: 추천번호                │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--recommend" aria-labelledby="card3-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--cyan" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                  </svg>
+                </span>
+                <h2 id="card3-title" class="card-title">AI 추천번호</h2>
+              </div>
+              <span class="card-badge card-badge--ai">AI</span>
+            </div>
+
+            <div class="card-body">
+              <!-- 추천 세트 목록 -->
+              <div class="recommend-sets" aria-label="AI 추천 번호 세트">
+
+                <div class="recommend-set">
+                  <span class="set-label">A세트</span>
+                  <div class="set-balls" role="list" aria-label="A세트 추천 번호">
+                    <div class="lotto-ball ball--yellow" role="listitem">7</div>
+                    <div class="lotto-ball ball--blue" role="listitem">13</div>
+                    <div class="lotto-ball ball--red" role="listitem">25</div>
+                    <div class="lotto-ball ball--gray" role="listitem">34</div>
+                    <div class="lotto-ball ball--gray" role="listitem">39</div>
+                    <div class="lotto-ball ball--green" role="listitem">43</div>
+                  </div>
+                  <div class="set-score">
+                    <span class="score-label">적중 예상</span>
+                    <span class="score-bar" aria-hidden="true">
+                      <span class="score-fill" style="width: 78%"></span>
+                    </span>
+                    <span class="score-value">78%</span>
+                  </div>
+                </div>
+
+                <div class="recommend-set">
+                  <span class="set-label">B세트</span>
+                  <div class="set-balls" role="list" aria-label="B세트 추천 번호">
+                    <div class="lotto-ball ball--yellow" role="listitem">4</div>
+                    <div class="lotto-ball ball--blue" role="listitem">16</div>
+                    <div class="lotto-ball ball--blue" role="listitem">20</div>
+                    <div class="lotto-ball ball--red" role="listitem">28</div>
+                    <div class="lotto-ball ball--gray" role="listitem">37</div>
+                    <div class="lotto-ball ball--green" role="listitem">45</div>
+                  </div>
+                  <div class="set-score">
+                    <span class="score-label">적중 예상</span>
+                    <span class="score-bar" aria-hidden="true">
+                      <span class="score-fill" style="width: 65%"></span>
+                    </span>
+                    <span class="score-value">65%</span>
+                  </div>
+                </div>
+
+                <div class="recommend-set">
+                  <span class="set-label">C세트</span>
+                  <div class="set-balls" role="list" aria-label="C세트 추천 번호">
+                    <div class="lotto-ball ball--yellow" role="listitem">1</div>
+                    <div class="lotto-ball ball--yellow" role="listitem">9</div>
+                    <div class="lotto-ball ball--red" role="listitem">23</div>
+                    <div class="lotto-ball ball--red" role="listitem">30</div>
+                    <div class="lotto-ball ball--gray" role="listitem">36</div>
+                    <div class="lotto-ball ball--green" role="listitem">41</div>
+                  </div>
+                  <div class="set-score">
+                    <span class="score-label">적중 예상</span>
+                    <span class="score-bar" aria-hidden="true">
+                      <span class="score-fill" style="width: 55%"></span>
+                    </span>
+                    <span class="score-value">55%</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </article>
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 4: 번호 생성 버튼          │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--generate" aria-labelledby="card4-title">
+            <div class="card-body card-body--center">
+              <div class="generate-icon" aria-hidden="true">🎱</div>
+              <h2 id="card4-title" class="generate-title">번호 직접 생성</h2>
+              <p class="generate-desc">원하는 조건으로 로또 번호를<br>직접 생성해보세요</p>
+
+              <!-- 생성 모드 선택 -->
+              <div class="gen-mode-group" role="group" aria-label="생성 모드">
+                <label class="gen-mode-chip">
+                  <input type="radio" name="gen-mode" value="freq" checked />
+                  <span>빈도 기반</span>
+                </label>
+                <label class="gen-mode-chip">
+                  <input type="radio" name="gen-mode" value="balance" />
+                  <span>균형 선택</span>
+                </label>
+                <label class="gen-mode-chip">
+                  <input type="radio" name="gen-mode" value="random" />
+                  <span>완전 랜덤</span>
+                </label>
+              </div>
+
+              <!-- 생성 버튼 -->
+              <button
+                id="generate-btn"
+                class="btn btn--primary btn--glow btn--xl"
+                aria-label="번호 생성하기"
+                type="button"
+              >
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                번호 생성하기
+              </button>
+
+              <!-- 생성 결과 미리보기 (JS 동적 변경 예정) -->
+              <div class="generate-preview" aria-live="polite" aria-label="생성된 번호">
+                <div class="preview-balls" role="list" aria-label="대기 중">
+                  <div class="lotto-ball ball--placeholder" role="listitem">?</div>
+                  <div class="lotto-ball ball--placeholder" role="listitem">?</div>
+                  <div class="lotto-ball ball--placeholder" role="listitem">?</div>
+                  <div class="lotto-ball ball--placeholder" role="listitem">?</div>
+                  <div class="lotto-ball ball--placeholder" role="listitem">?</div>
+                  <div class="lotto-ball ball--placeholder" role="listitem">?</div>
+                </div>
+                <p class="preview-hint">버튼을 눌러 번호를 생성하세요</p>
+              </div>
+            </div>
+          </article>
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 5: 번호 분석 요약          │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--analysis-summary" aria-labelledby="card5-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--green" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                  </svg>
+                </span>
+                <h2 id="card5-title" class="card-title">번호 분석 요약</h2>
+              </div>
+              <a href="#analysis" class="card-link" data-page="analysis" aria-label="상세 분석 보기">전체 보기 →</a>
+            </div>
+
+            <div class="card-body">
+              <div class="analysis-summary-grid">
+
+                <!-- 핫 번호 -->
+                <div class="summary-stat-block">
+                  <div class="stat-block-header">
+                    <span class="stat-block-icon" aria-hidden="true">🔥</span>
+                    <span class="stat-block-label">핫 번호 TOP 5</span>
+                  </div>
+                  <div class="hot-nums" role="list" aria-label="핫 번호 상위 5개">
+                    <div class="hot-num-item" role="listitem">
+                      <div class="mini-ball mini--gray">34</div>
+                      <div class="hot-bar-wrap"><div class="hot-bar" style="width:88%" aria-label="88%"></div></div>
+                      <span class="hot-count">192회</span>
+                    </div>
+                    <div class="hot-num-item" role="listitem">
+                      <div class="mini-ball mini--blue">18</div>
+                      <div class="hot-bar-wrap"><div class="hot-bar" style="width:82%"></div></div>
+                      <span class="hot-count">179회</span>
+                    </div>
+                    <div class="hot-num-item" role="listitem">
+                      <div class="mini-ball mini--red">27</div>
+                      <div class="hot-bar-wrap"><div class="hot-bar" style="width:79%"></div></div>
+                      <span class="hot-count">173회</span>
+                    </div>
+                    <div class="hot-num-item" role="listitem">
+                      <div class="mini-ball mini--yellow">6</div>
+                      <div class="hot-bar-wrap"><div class="hot-bar" style="width:75%"></div></div>
+                      <span class="hot-count">164회</span>
+                    </div>
+                    <div class="hot-num-item" role="listitem">
+                      <div class="mini-ball mini--green">43</div>
+                      <div class="hot-bar-wrap"><div class="hot-bar" style="width:72%"></div></div>
+                      <span class="hot-count">157회</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 홀짝/고저 비율 -->
+                <div class="summary-stat-block">
+                  <div class="stat-block-header">
+                    <span class="stat-block-icon" aria-hidden="true">⚖️</span>
+                    <span class="stat-block-label">홀짝 / 고저 비율</span>
+                  </div>
+                  <div class="ratio-stats">
+                    <div class="ratio-row" aria-label="홀짝 비율">
+                      <span class="ratio-label">홀수</span>
+                      <div class="ratio-bar-track" role="progressbar" aria-valuenow="51" aria-valuemin="0" aria-valuemax="100">
+                        <div class="ratio-bar-odd" style="width:51%"></div>
+                        <div class="ratio-bar-even" style="width:49%"></div>
+                      </div>
+                      <span class="ratio-label">짝수</span>
+                    </div>
+                    <div class="ratio-labels-row">
+                      <span class="ratio-pct">51%</span>
+                      <span class="ratio-pct ratio-pct--right">49%</span>
+                    </div>
+
+                    <div class="ratio-row" aria-label="고저 비율">
+                      <span class="ratio-label">저번호</span>
+                      <div class="ratio-bar-track" role="progressbar" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100">
+                        <div class="ratio-bar-low" style="width:48%"></div>
+                        <div class="ratio-bar-high" style="width:52%"></div>
+                      </div>
+                      <span class="ratio-label">고번호</span>
+                    </div>
+                    <div class="ratio-labels-row">
+                      <span class="ratio-pct">48%</span>
+                      <span class="ratio-pct ratio-pct--right">52%</span>
+                    </div>
+                  </div>
+
+                  <!-- 번호대별 분포 -->
+                  <div class="stat-block-header" style="margin-top: 1rem;">
+                    <span class="stat-block-icon" aria-hidden="true">📊</span>
+                    <span class="stat-block-label">번호대별 분포</span>
+                  </div>
+                  <div class="range-dist" aria-label="번호대별 분포">
+                    <div class="range-col">
+                      <div class="range-bar-wrap">
+                        <div class="range-bar" style="height: 70%" aria-label="1~10번대 70%"></div>
+                      </div>
+                      <span class="range-label range-label--yellow">1~10</span>
+                      <span class="range-pct">21%</span>
+                    </div>
+                    <div class="range-col">
+                      <div class="range-bar-wrap">
+                        <div class="range-bar range-bar--blue" style="height: 85%"></div>
+                      </div>
+                      <span class="range-label range-label--blue">11~20</span>
+                      <span class="range-pct">25%</span>
+                    </div>
+                    <div class="range-col">
+                      <div class="range-bar-wrap">
+                        <div class="range-bar range-bar--red" style="height: 78%"></div>
+                      </div>
+                      <span class="range-label range-label--red">21~30</span>
+                      <span class="range-pct">23%</span>
+                    </div>
+                    <div class="range-col">
+                      <div class="range-bar-wrap">
+                        <div class="range-bar range-bar--gray" style="height: 90%"></div>
+                      </div>
+                      <span class="range-label range-label--gray">31~40</span>
+                      <span class="range-pct">27%</span>
+                    </div>
+                    <div class="range-col">
+                      <div class="range-bar-wrap">
+                        <div class="range-bar range-bar--green" style="height: 40%"></div>
+                      </div>
+                      <span class="range-label range-label--green">41~45</span>
+                      <span class="range-pct">11%</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </article>
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 6: 최근 출현 빈도 차트     │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--freq-chart" aria-labelledby="card6-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--blue" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6"  y1="20" x2="6"  y2="14"/>
+                    <line x1="2"  y1="20" x2="22" y2="20"/>
+                  </svg>
+                </span>
+                <h2 id="card6-title" class="card-title">번호별 출현 빈도</h2>
+              </div>
+              <div class="chart-range-tabs" role="group" aria-label="분석 범위">
+                <button class="range-tab active" data-range="all">전체</button>
+                <button class="range-tab" data-range="50">50회</button>
+                <button class="range-tab" data-range="10">10회</button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="chart-wrap chart-wrap--tall">
+                <canvas id="chart-home-freq" aria-label="번호별 출현 빈도 막대 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+
+
+
+
+          <!-- ┌─────────────────────────────────┐ -->
+          <!-- │  카드 7: AI 추천 사유            │ -->
+          <!-- └─────────────────────────────────┘ -->
+          <article class="card card--ai-reason" aria-labelledby="card7-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--purple" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M12 2a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2V4a2 2 0 012-2z"/>
+                    <path d="M12 14a2 2 0 012 2v2a2 2 0 01-2 2 2 2 0 01-2-2v-2a2 2 0 012-2z"/>
+                    <path d="M2 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2H4a2 2 0 01-2-2z"/>
+                    <path d="M14 12a2 2 0 012-2h2a2 2 0 012 2 2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                  </svg>
+                </span>
+                <h2 id="card7-title" class="card-title">AI 추천 사유</h2>
+              </div>
+              <span class="card-badge card-badge--ai">GPT 분석</span>
+            </div>
+
+            <div class="card-body">
+              <!-- AI 분석 요약 -->
+              <div class="ai-summary-box">
+                <div class="ai-avatar" aria-hidden="true">🤖</div>
+                <blockquote class="ai-quote">
+                  "최근 50회차 데이터를 분석한 결과, <strong>34번</strong>이 가장 높은 출현 빈도를 보이며,
+                  <strong>18번</strong>과 함께 연속 출현 패턴이 확인됩니다. 홀짝 비율은 3:3이
+                  가장 많이 당첨되었고, 번호 합계 <strong>130~170</strong> 범위에서 1등이 집중 발생했습니다."
+                </blockquote>
+              </div>
+
+              <!-- 추천 근거 태그 -->
+              <div class="ai-reason-tags" aria-label="추천 근거 태그">
+                <div class="reason-tag reason-tag--hot">
+                  <span class="tag-icon" aria-hidden="true">🔥</span>
+                  <span>34번 최다 출현</span>
+                </div>
+                <div class="reason-tag reason-tag--pattern">
+                  <span class="tag-icon" aria-hidden="true">📈</span>
+                  <span>18번 상승 트렌드</span>
+                </div>
+                <div class="reason-tag reason-tag--balance">
+                  <span class="tag-icon" aria-hidden="true">⚖️</span>
+                  <span>홀짝 3:3 균형</span>
+                </div>
+                <div class="reason-tag reason-tag--sum">
+                  <span class="tag-icon" aria-hidden="true">🔢</span>
+                  <span>합계 147 (적정)</span>
+                </div>
+                <div class="reason-tag reason-tag--cold">
+                  <span class="tag-icon" aria-hidden="true">❄️</span>
+                  <span>11번 장기 미출현</span>
+                </div>
+                <div class="reason-tag reason-tag--range">
+                  <span class="tag-icon" aria-hidden="true">🎯</span>
+                  <span>전 범위 분산</span>
+                </div>
+              </div>
+
+              <!-- 통계 인사이트 리스트 -->
+              <ul class="ai-insights" aria-label="AI 분석 인사이트">
+                <li class="insight-item">
+                  <span class="insight-num" aria-hidden="true">01</span>
+                  <p>최근 10회차 중 <strong>7회</strong> 이상 짝수가 3개 포함된 조합이 당첨</p>
+                </li>
+                <li class="insight-item">
+                  <span class="insight-num" aria-hidden="true">02</span>
+                  <p>번호 합계가 <strong>100~180</strong> 구간에서 당첨 확률 <strong>68%</strong></p>
+                </li>
+                <li class="insight-item">
+                  <span class="insight-num" aria-hidden="true">03</span>
+                  <p>연속 번호 패턴(예: 13-14)은 최근 1년간 <strong>43%</strong>의 당첨회차에 등장</p>
+                </li>
+              </ul>
+            </div>
+          </article>
+
+
+        </div>
+        <!-- /DASHBOARD GRID -->
+
+      </section>
+      <!-- /PAGE HOME -->
+
+
+      <!-- ─────────────────────────────────────────
+           번호분석 페이지 (플레이스홀더)
+      ───────────────────────────────────────── -->
+      <section id="page-analysis" class="page" aria-label="번호분석" aria-hidden="true">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h1 class="page-title">번호 분석</h1>
+            <p class="page-subtitle">역대 당첨 번호의 통계를 상세하게 분석합니다</p>
+          </div>
+        </div>
+        <div class="coming-soon-card">
+          <div class="coming-icon" aria-hidden="true">📊</div>
+          <h2 class="coming-title">상세 분석 기능 준비 중</h2>
+          <p class="coming-desc">다음 개발 단계에서 구현됩니다.<br>빈도 히트맵, 트렌드 차트, 연속번호 패턴 분석을 제공할 예정입니다.</p>
+        </div>
+      </section>
+
+
+      <!-- ─────────────────────────────────────────
+           추천번호 페이지
+      ───────────────────────────────────────── -->
+      <section id="page-recommend" class="page" aria-label="추천번호" aria-hidden="true">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h1 class="page-title">추천 번호</h1>
+            <p class="page-subtitle">통계 기반 번호 추천 — 당첨 보장이 아닌 참고용입니다</p>
+          </div>
+        </div>
+
+        <!-- ① 알고리즘 선택 -->
+        <div class="rec-section">
+          <div class="rec-section-header">
+            <h2 class="rec-section-title">알고리즘 선택</h2>
+          </div>
+          <div id="rec-algo-tabs" class="algo-tabs" role="group" aria-label="추천 알고리즘"></div>
+        </div>
+
+        <!-- ② 세트 수 + 구속 조건 -->
+        <div class="rec-section">
+          <div class="rec-settings-row">
+
+            <!-- 세트 수 -->
+            <div class="rec-setting-group">
+              <h3 class="rec-setting-label">
+                <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                </svg>
+                생성 세트 수
+              </h3>
+              <div class="set-count-btns" role="group" aria-label="세트 수 선택">
+                <button id="set-count-1" class="set-count-btn" aria-label="1세트">1</button>
+                <button id="set-count-2" class="set-count-btn" aria-label="2세트">2</button>
+                <button id="set-count-3" class="set-count-btn" aria-label="3세트">3</button>
+                <button id="set-count-4" class="set-count-btn" aria-label="4세트">4</button>
+                <button id="set-count-5" class="set-count-btn active" aria-label="5세트">5</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 번호 고정 / 제외 그리드 -->
+          <div class="num-grid-panel">
+            <div class="num-grid-header">
+              <span class="num-grid-title">
+                <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                번호 고정 / 제외
+              </span>
+              <div class="grid-legend" aria-label="차례 설명">
+                <span class="legend-chip legend-chip--pin">1클릭 고정 포함</span>
+                <span class="legend-chip legend-chip--exc">2클릭 제외</span>
+                <span class="legend-chip legend-chip--nor">3클릭 해제</span>
+              </div>
+            </div>
+
+            <div id="rec-num-grid" class="num-grid" role="group" aria-label="1에서 45 번호 선택"></div>
+
+            <div class="grid-actions">
+              <button id="rec-clear-pinned" class="grid-action-btn">
+                고정 초기화 <span id="pinned-count" class="action-badge">0</span>
+              </button>
+              <button id="rec-clear-excluded" class="grid-action-btn">
+                제외 초기화 <span id="excluded-count" class="action-badge">0</span>
+              </button>
+              <button id="rec-clear-all-constraints" class="grid-action-btn grid-action-btn--danger">
+                전체 해제
+              </button>
+            </div>
+
+            <!-- 제약 요약 -->
+            <div class="constraint-summary">
+              <div class="constraint-row">
+                <span class="constraint-icon">📌</span>
+                <span class="constraint-key">고정 번호:</span>
+                <span id="rec-pinned-display" class="constraint-val constraint-val--empty">없음</span>
+              </div>
+              <div class="constraint-row">
+                <span class="constraint-icon">🚫</span>
+                <span class="constraint-key">제외 번호:</span>
+                <span id="rec-excluded-display" class="constraint-val constraint-val--empty">없음</span>
+              </div>
+              <p id="rec-constraint-warn" class="constraint-warn" style="display:none" role="alert"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ③ 생성 버튼 -->
+        <div class="rec-generate-area">
+          <button
+            id="rec-generate-btn"
+            class="btn btn--primary btn--glow btn--xl"
+            aria-label="번호 생성하기"
+            type="button"
+          >
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            번호 생성하기
+          </button>
+          <p class="rec-disclaimer-mini">⚠️ 통계 기반 참고용 번호로 당첨을 보장하지 않습니다</p>
+        </div>
+
+        <!-- ④ 생성 결과 -->
+        <div class="rec-section" id="rec-results-section" style="display:none">
+          <div class="rec-section-header">
+            <h2 class="rec-section-title">생성 결과</h2>
+            <button id="rec-regen-all-btn" class="btn btn--ghost btn--sm" type="button">
+              🔄 전체 다시 생성
+            </button>
+          </div>
+          <p id="rec-disclaimer" class="disclaimer-text" role="note"></p>
+          <div id="rec-results" class="results-grid" aria-live="polite" aria-label="생성된 추천 번호"></div>
+        </div>
+
+        <!-- ⑤ 즐겨찾기 -->
+        <div class="rec-section">
+          <div class="rec-section-header">
+            <h2 class="rec-section-title">
+              즐겨찾기
+              <span id="fav-count-badge" class="count-badge">0</span>
+            </h2>
+            <button id="rec-clear-fav-btn" class="btn btn--ghost btn--sm btn--danger" type="button">
+              전체 삭제
+            </button>
+          </div>
+          <div id="rec-favorites-list" class="fav-list" aria-label="즐겨찾기 목록"></div>
+        </div>
+
+        <!-- ⑥ 생성 기록 -->
+        <div class="rec-section">
+          <div class="rec-section-header">
+            <h2 class="rec-section-title">최근 생성 기록</h2>
+            <button id="rec-clear-hist-btn" class="btn btn--ghost btn--sm" type="button">기록 삭제</button>
+          </div>
+          <div id="rec-history-list" class="hist-list" aria-label="최근 생성 기록"></div>
+        </div>
+
+      </section>
+
+
+      <!-- ─────────────────────────────────────────
+           통계 페이지
+      ───────────────────────────────────────── -->
+      <section id="page-stats" class="page" aria-label="통계" aria-hidden="true">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h1 class="page-title">통계</h1>
+            <p class="page-subtitle">로또 전체 통계 데이터를 차트로 시각화합니다</p>
+          </div>
+          <!-- 분석 범위 탭 -->
+          <div class="stats-range-group" role="group" aria-label="통계 분석 범위">
+            <button class="stats-range-btn active" data-stats-range="0">전체</button>
+            <button class="stats-range-btn" data-stats-range="50">50회</button>
+            <button class="stats-range-btn" data-stats-range="30">30회</button>
+            <button class="stats-range-btn" data-stats-range="10">10회</button>
+          </div>
+        </div>
+
+        <div class="stats-charts-grid">
+
+          <!-- ① 번호별 출현횟수 -->
+          <article class="card stats-chart-card" aria-labelledby="sc1-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--purple" aria-hidden="true">📊</span>
+                <h2 id="sc1-title" class="card-title">번호별 출현횟수</h2>
+              </div>
+              <span class="card-badge">1~45</span>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap chart-wrap--tall">
+                <canvas id="chart-freq" aria-label="번호별 출현횟수 막대 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- ② 최근 출현 빈도 비교 -->
+          <article class="card stats-chart-card" aria-labelledby="sc2-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--blue" aria-hidden="true">📈</span>
+                <h2 id="sc2-title" class="card-title">최근 출현 빈도 비교</h2>
+              </div>
+              <span class="card-badge">10 · 30 · 50회</span>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap chart-wrap--tall">
+                <canvas id="chart-recent" aria-label="최근 출현 빈도 비교 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- ③ 홀짝 비율 -->
+          <article class="card stats-chart-card" aria-labelledby="sc3-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--gold" aria-hidden="true">⚖️</span>
+                <h2 id="sc3-title" class="card-title">홀짝 비율 분포</h2>
+              </div>
+            </div>
+            <div class="card-body chart-body--split">
+              <div class="chart-wrap chart-wrap--doughnut">
+                <canvas id="chart-odd-even" aria-label="홀짝 비율 도넛 차트"></canvas>
+              </div>
+              <div id="chart-odd-even-legend" class="chart-side-legend"></div>
+            </div>
+          </article>
+
+          <!-- ④ 번호 합계 분포 -->
+          <article class="card stats-chart-card" aria-labelledby="sc4-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--cyan" aria-hidden="true">🔢</span>
+                <h2 id="sc4-title" class="card-title">번호 합계 분포</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <canvas id="chart-sum" aria-label="번호 합계 분포 막대 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- ⑤ 구간별 분포 -->
+          <article class="card stats-chart-card" aria-labelledby="sc5-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--green" aria-hidden="true">🎯</span>
+                <h2 id="sc5-title" class="card-title">구간별 분포</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <canvas id="chart-range" aria-label="구간별 분포 막대 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- ⑥ 끝수 분포 -->
+          <article class="card stats-chart-card" aria-labelledby="sc6-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--purple" aria-hidden="true">🔟</span>
+                <h2 id="sc6-title" class="card-title">끝수 분포</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <canvas id="chart-digit" aria-label="끝수 분포 막대 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- ⑦ 최근 회차 추이 -->
+          <article class="card stats-chart-card stats-chart-card--wide" aria-labelledby="sc7-title">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--cyan" aria-hidden="true">📉</span>
+                <h2 id="sc7-title" class="card-title">최근 회차 추이</h2>
+              </div>
+              <span class="card-badge">합계 · 홀수 · AC값</span>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                <canvas id="chart-trend" aria-label="최근 회차 추이 라인 차트"></canvas>
+              </div>
+            </div>
+          </article>
+
+        </div>
+        <!-- /stats-charts-grid -->
+
+      </section>
+
+
+      <!-- ─────────────────────────────────────────
+           설정 페이지 (플레이스홀더)
+      ───────────────────────────────────────── -->
+      <section id="page-settings" class="page" aria-label="설정" aria-hidden="true">
+        <div class="page-header">
+          <div class="page-header-text">
+            <h1 class="page-title">설정</h1>
+            <p class="page-subtitle">앱 설정을 변경합니다</p>
+          </div>
+        </div>
+
+        <!-- 설정 카드 -->
+        <div class="settings-list">
+
+          <div class="settings-card">
+            <h2 class="settings-group-title">화면 설정</h2>
+
+            <div class="settings-row">
+              <div class="settings-info">
+                <span class="settings-label">다크 모드</span>
+                <span class="settings-desc">어두운 배경으로 눈을 보호합니다</span>
+              </div>
+              <label class="toggle-switch" aria-label="다크 모드 전환">
+                <input type="checkbox" id="dark-mode-toggle" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-info">
+                <span class="settings-label">애니메이션 효과</span>
+                <span class="settings-desc">부드러운 전환 효과를 사용합니다</span>
+              </div>
+              <label class="toggle-switch" aria-label="애니메이션 효과 전환">
+                <input type="checkbox" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h2 class="settings-group-title">데이터 설정</h2>
+
+            <div class="settings-row">
+              <div class="settings-info">
+                <span class="settings-label">분석 기본 범위</span>
+                <span class="settings-desc">기본 통계 분석에 사용할 회차 범위</span>
+              </div>
+              <select class="settings-select" aria-label="분석 기본 범위 선택">
+                <option>전체 회차</option>
+                <option>최근 200회</option>
+                <option selected>최근 100회</option>
+                <option>최근 50회</option>
+              </select>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-info">
+                <span class="settings-label">저장 데이터 초기화</span>
+                <span class="settings-desc">저장된 번호와 설정을 모두 삭제합니다</span>
+              </div>
+              <button class="btn btn--danger-outline btn--sm" type="button" aria-label="데이터 초기화">초기화</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h2 class="settings-group-title">앱 정보</h2>
+            <div class="app-info-grid">
+              <div class="app-info-row"><span class="info-key">버전</span><span class="info-val">v1.0.0</span></div>
+              <div class="app-info-row"><span class="info-key">데이터 출처</span><span class="info-val">동행복권</span></div>
+              <div class="app-info-row"><span class="info-key">개발</span><span class="info-val">Kay Lab</span></div>
+              <div class="app-info-row"><span class="info-key">최종 업데이트</span><span class="info-val">2025. 01. 04</span></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+    </main>
+    <!-- /MAIN -->
+
+
+    <!-- ═══════════════════════════════════════════════
+         FOOTER
+    ═══════════════════════════════════════════════ -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-inner">
+
+        <div class="footer-brand">
+          <!-- 푸터 듀얼 로고 -->
+          <div class="footer-logo-row">
+            <img src="../kay_lab_logo_transparent.png" alt="Kay Lab" class="footer-logo footer-logo--kaylab" loading="lazy" />
+            <span class="footer-logo-divider" aria-hidden="true"></span>
+            <span class="footer-lottolens" aria-label="LottoLens">
+              <span aria-hidden="true">🎱</span>
+              <span class="footer-lottolens-text">Lotto<strong>Lens</strong></span>
+            </span>
+          </div>
+          <p class="footer-tagline">데이터로 보는 로또의 패턴</p>
+        </div>
+
+        <div class="footer-meta">
+          <dl class="footer-info">
+            <div class="footer-info-row">
+              <dt>데이터 출처</dt>
+              <dd>
+                <a href="https://www.dhlottery.co.kr" target="_blank" rel="noopener noreferrer" class="footer-link">
+                  동행복권 공식 홈페이지 ↗
+                </a>
+              </dd>
+            </div>
+            <div class="footer-info-row">
+              <dt>버전</dt>
+              <dd>v1.0.0 (2025.01)</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="footer-links-col">
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer-github-btn"
+            aria-label="GitHub 저장소 방문 (새 탭 열림)"
+          >
+            <!-- GitHub SVG 아이콘 -->
+            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-disclaimer">
+          ⚠️ 이 서비스는 통계 분석 목적으로만 제공되며, 당첨을 보장하지 않습니다.
+          과도한 복권 구매는 삼가주세요.
+        </p>
+        <p class="footer-copy">© 2025 Kay Lab · LottoLens. All rights reserved.</p>
+      </div>
+    </footer>
+    <!-- /FOOTER -->
+
+  </div>
+  <!-- /LAYOUT WRAPPER -->
+
+
+  <!-- ═══════════════════════════════════════════════
+       BOTTOM NAV (모바일 전용)
+  ═══════════════════════════════════════════════ -->
+  <nav class="bottom-nav" aria-label="하단 모바일 메뉴">
+    <a href="#home"     class="bottom-nav-item active" data-page="home"     aria-current="page">
+      <span class="bnav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+          <path d="M9 21V12h6v9"/>
+        </svg>
+      </span>
+      <span class="bnav-label">홈</span>
+    </a>
+    <a href="#analysis" class="bottom-nav-item" data-page="analysis">
+      <span class="bnav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6"  y1="20" x2="6"  y2="14"/>
+          <line x1="2"  y1="20" x2="22" y2="20"/>
+        </svg>
+      </span>
+      <span class="bnav-label">분석</span>
+    </a>
+    <a href="#recommend" class="bottom-nav-item bottom-nav-item--center" data-page="recommend">
+      <span class="bnav-icon bnav-icon--fab" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+      </span>
+      <span class="bnav-label">추천</span>
+    </a>
+    <a href="#stats"    class="bottom-nav-item" data-page="stats">
+      <span class="bnav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/>
+        </svg>
+      </span>
+      <span class="bnav-label">통계</span>
+    </a>
+    <a href="#settings" class="bottom-nav-item" data-page="settings">
+      <span class="bnav-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+      </span>
+      <span class="bnav-label">설정</span>
+    </a>
+  </nav>
+  <!-- /BOTTOM NAV -->
+
+
+  <!-- Toast 컨테이너 -->
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- JavaScript
+       로드 순서: utils.js → storage.js → analysis.js → prediction.js → chart.js → recommend.js → app.js
+       type="module" 미사용 → file:// 프로토콜에서도 CORS 없이 동작 -->
+  <script src="js/utils.js"      defer></script>
+  <script src="js/storage.js"    defer></script>
+  <script src="js/analysis.js"   defer></script>
+  <script src="js/prediction.js" defer></script>
+  <script src="js/chart.js"      defer></script>
+  <script src="js/recommend.js"  defer></script>
+  <script src="js/app.js"        defer></script>
+
+
+</body>
+</html>

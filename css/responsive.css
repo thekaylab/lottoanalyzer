@@ -1,0 +1,369 @@
+/* ================================================================
+   responsive.css  —  LottoLens 반응형 미디어 쿼리
+   전략: Mobile-First (min-width 점진적 향상)
+
+   브레이크포인트:
+   sm  : 480px  (큰 모바일)
+   md  : 768px  (태블릿)
+   lg  : 1024px (사이드바 전환점)
+   xl  : 1280px (넓은 데스크탑)
+   2xl : 1440px (와이드 스크린)
+   ================================================================ */
+
+
+/* ──────────────────────────────────────
+   480px 이상 (큰 모바일)
+   ────────────────────────────────────── */
+@media (min-width: 480px) {
+
+  /* 패딩 확대 */
+  :root { --container-pad: 1.5rem; }
+
+  /* 대시보드: 2열 */
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* 최신 회차 전체 너비 */
+  .card--latest-round {
+    grid-column: 1 / -1;
+  }
+
+  /* 회차 정보 그리드: 3열 */
+  .round-info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* 볼 그룹 가로 정렬 */
+  .ball-row { flex-wrap: nowrap; }
+
+  /* 번호 생성 카드: 전체 너비 */
+  .card--generate { grid-column: 1 / -1; }
+
+  /* 분석 요약 2열 */
+  .analysis-summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* 차트 + AI 전체 너비 */
+  .card--freq-chart,
+  .card--ai-reason {
+    grid-column: 1 / -1;
+  }
+
+  /* 이전 회차 가로 정렬 */
+  .prev-round-item { flex-wrap: nowrap; }
+
+}
+
+
+/* ──────────────────────────────────────
+   768px 이상 (태블릿)
+   ────────────────────────────────────── */
+@media (min-width: 768px) {
+
+  :root {
+    --container-pad: 2rem;
+    --card-pad: 1.5rem;
+  }
+
+  /* 대시보드: 3열 */
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* 최신 회차: 2열 차지 */
+  .card--latest-round  { grid-column: 1 / 3; }
+
+  /* 최근 당첨번호: 나머지 1열 */
+  .card--winning-numbers { grid-column: 3 / 4; }
+
+  /* 번호 생성: 1열 */
+  .card--generate { grid-column: auto; }
+
+  /* 분석 요약: 2열 */
+  .card--analysis-summary { grid-column: 1 / 3; }
+
+  /* 차트: 전체 너비 */
+  .card--freq-chart { grid-column: 1 / -1; }
+
+  /* AI: 전체 너비 */
+  .card--ai-reason { grid-column: 1 / -1; }
+
+  /* 볼 크기 증가 */
+  .lotto-ball { width: 46px; height: 46px; }
+
+  /* 빈도 차트 높이 */
+  .freq-bar-group { height: 220px; }
+
+  /* 미니 볼 크기 */
+  .mini-ball { width: 30px; height: 30px; }
+
+  /* 추천 세트 볼 */
+  .set-balls .lotto-ball { width: 40px; height: 40px; }
+
+  /* 푸터 */
+  .footer-inner {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .footer-brand { flex-shrink: 0; }
+  .footer-links-col { flex-shrink: 0; align-self: flex-start; }
+
+  /* 페이지 헤더 */
+  .page-title { font-size: 1.75rem; }
+
+  /* 번호 생성 영역 가로 정렬 */
+  .card-body--center {
+    flex-direction: column;
+    padding: 1.75rem;
+  }
+
+}
+
+
+/* ──────────────────────────────────────
+   1024px 이상 (사이드바 전환점)
+   ────────────────────────────────────── */
+@media (min-width: 1024px) {
+
+  /* ── 사이드바 항상 표시 ── */
+  .sidebar {
+    left: 0;               /* 항상 표시 */
+    position: fixed;
+    box-shadow: none;
+    border-right: 1px solid var(--border-color);
+  }
+
+  /* 사이드바 오버레이 불필요 */
+  .sidebar-overlay { display: none !important; }
+
+  /* 햄버거 버튼 숨김 */
+  .hamburger-btn { display: none; }
+
+  /* 모바일 로고 숨김 (사이드바 로고 사용) */
+  .mobile-logo { display: none; }
+
+  /* 레이아웃: 사이드바 너비만큼 오른쪽에 배치 */
+  .layout-wrapper {
+    margin-left: var(--sidebar-w);
+    padding-top: var(--header-h);
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* 헤더도 사이드바 너비만큼 오른쪽으로 */
+  .top-header {
+    left: var(--sidebar-w);
+  }
+
+  /* 하단 네비 숨김 (사이드바 사용) */
+  .bottom-nav { display: none; }
+
+  /* 메인 콘텐츠: 하단 패딩 줄임 */
+  .main-content {
+    padding-bottom: 2rem;
+  }
+
+  /* 푸터도 하단 패딩 줄임 */
+  .site-footer {
+    padding-bottom: 2rem;
+  }
+
+  /* 토스트 위치 */
+  .toast-container {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+
+  /* 대시보드: 4열 */
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* 최신 회차: 2열 */
+  .card--latest-round { grid-column: 1 / 3; }
+
+  /* 당첨번호: 2열 */
+  .card--winning-numbers { grid-column: 3 / 5; }
+
+  /* 추천번호: 2열 */
+  .card--recommend { grid-column: 1 / 3; }
+
+  /* 번호 생성: 2열 */
+  .card--generate { grid-column: 3 / 5; }
+
+  /* 분석 요약: 전체 너비 */
+  .card--analysis-summary { grid-column: 1 / -1; }
+
+  /* 분석 요약 내부 2열 */
+  .analysis-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 차트: 3열 */
+  .card--freq-chart { grid-column: 1 / 4; }
+
+  /* AI: 1열 */
+  .card--ai-reason { grid-column: 4 / 5; }
+
+  /* 볼 크기 */
+  .lotto-ball { width: 48px; height: 48px; font-size: 0.9375rem; }
+
+  /* 페이지 타이틀 */
+  .page-title { font-size: 2rem; }
+
+  /* 설정: 2열 */
+  .settings-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .settings-list .settings-card:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* 번호 생성 카드 내부 레이아웃 */
+  .card--generate .card-body--center {
+    justify-content: center;
+    padding: 2rem;
+    min-height: 100%;
+  }
+
+}
+
+
+/* ──────────────────────────────────────
+   1280px 이상
+   ────────────────────────────────────── */
+@media (min-width: 1280px) {
+
+  :root {
+    --container-pad: 2.5rem;
+    --card-pad: 1.75rem;
+  }
+
+  /* 대시보드: 12열 그리드로 세밀 조정 */
+  .dashboard-grid {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.25rem;
+  }
+
+  .card--latest-round     { grid-column: 1 / 5; }
+  .card--winning-numbers  { grid-column: 5 / 9; }
+  .card--recommend        { grid-column: 9 / 13; }
+  .card--generate         { grid-column: 1 / 5; }
+  .card--analysis-summary { grid-column: 5 / 13; }
+  .card--freq-chart       { grid-column: 1 / 9; }
+  .card--ai-reason        { grid-column: 9 / 13; }
+
+  /* 볼 크기 */
+  .lotto-ball { width: 52px; height: 52px; font-size: 1rem; }
+
+  /* 빈도 차트 */
+  .freq-bar-group { height: 240px; }
+
+  /* 페이지 */
+  .page-title { font-size: 2.25rem; }
+
+}
+
+
+/* ──────────────────────────────────────
+   1440px 이상 (와이드)
+   ────────────────────────────────────── */
+@media (min-width: 1440px) {
+
+  :root { --container-pad: 3rem; }
+
+  .freq-bar-group { height: 260px; }
+
+}
+
+
+/* ──────────────────────────────────────
+   인쇄 스타일
+   ────────────────────────────────────── */
+@media print {
+
+  .sidebar,
+  .top-header,
+  .bottom-nav,
+  .toast-container,
+  #hamburger-btn,
+  .chart-range-tabs,
+  .gen-mode-group,
+  #generate-btn,
+  .btn--primary,
+  .coming-soon-card {
+    display: none !important;
+  }
+
+  .layout-wrapper {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .card {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .dashboard-grid {
+    display: block;
+  }
+
+  .card { margin-bottom: 1rem; }
+
+}
+
+
+/* ──────────────────────────────────────
+   터치 디바이스 최적화
+   ────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+
+  /* 호버 효과 제거 */
+  .card:hover        { transform: none; box-shadow: var(--shadow-card); }
+  .lotto-ball:hover  { transform: none; }
+  .nav-link:hover    { background: transparent; }
+
+  /* 터치 최소 타겟 (WCAG 2.5.5) */
+  .bottom-nav-item,
+  .nav-link,
+  .range-tab,
+  .btn {
+    min-height: 44px;
+  }
+
+  .icon-btn,
+  .hamburger-btn,
+  .theme-toggle-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+}
+
+
+/* ──────────────────────────────────────
+   시스템 다크 모드 감지 (JS 없을 때 폴백)
+   ────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  /* data-theme이 명시된 경우 JS가 제어하므로 무시됨 */
+  html:not([data-theme="dark"]) body:not([data-theme]) {
+    --bg-base:       #f0f0fa;
+    --bg-elevated:   #e8e8f4;
+    --text-primary:  #12112a;
+    --text-secondary:#4a4870;
+  }
+}

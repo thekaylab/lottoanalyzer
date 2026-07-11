@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+.idea/
+
+# 빌드 산출물 (해당 없음 — Static 프로젝트)
+dist/
+
+# 환경 변수
+.env
+.env.local
+
+# 로그
+*.log

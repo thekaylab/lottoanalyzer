@@ -31,7 +31,7 @@ def fetch_round(round_num):
                     "numbers": numbers,
                     "bonus": int(res.get('bonusNo')),
                     "prize": int(res.get('firstWinamnt', 0)),
-                    "winners": int(res.get('firstPrzewinnerCo', 0)),
+                    "winners": int(res.get('firstPrzwnerCo', 0)),
                     "sales": int(res.get('totSellamnt', 0))
                 }
     except Exception as e:

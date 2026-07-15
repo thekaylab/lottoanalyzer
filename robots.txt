@@ -1,0 +1,7 @@
+# robots.txt — LottoLens
+# https://kay-lab.github.io/lottolens/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kay-lab.github.io/lottolens/sitemap.xml

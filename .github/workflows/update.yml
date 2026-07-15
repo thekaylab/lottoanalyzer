@@ -1,0 +1,43 @@
+name: Auto Update Lotto Data
+
+on:
+  schedule:
+    # 매주 토요일 오후 9:00 KST (12:00 UTC)에 실행 (로또 추첨 직후 업데이트)
+    - cron: '0 12 * * 6'
+  workflow_dispatch:
+    # 필요시 수동 실행 가능하도록 설정
+
+permissions:
+  contents: write
+
+jobs:
+  update-lotto:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run update script
+        id: run_script
+        run: |
+          python scripts/update_lotto.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # 변경사항이 있는지 확인하고 커밋
+          if [ -n "$(git status --porcelain data/lotto.json)" ]; then
+            git add data/lotto.json
+            git commit -m "Auto-update: Lotto data updated to latest round [skip ci]"
+            git push origin main
+          else
+            echo "변경사항이 없습니다."
+          fi

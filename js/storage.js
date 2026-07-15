@@ -33,6 +33,9 @@ window.LottoStorage = (function () {
     THEME:       'lotto-theme',
   };
 
+  /** 캐시 버전: JSON을 업데이트할 때마다 올려 이전 캐시를 자동 무효화한다 */
+  const CACHE_VERSION = '1.3';
+
   /** 캐시 유효 시간 (밀리초): 1시간 */
   const CACHE_TTL_MS = 60 * 60 * 1000;
 
@@ -98,7 +101,8 @@ window.LottoStorage = (function () {
 
       // ⑤ 캐시 저장
       _memCache = data;
-      _writePersistedCache(data);
+      // raw._last_updated를 캐시에 함께 저장해 다음번 비교
+      _writePersistedCache(data, raw._last_updated || '');
       _notifyWaiters(data);
       return data;
 
@@ -214,7 +218,14 @@ window.LottoStorage = (function () {
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.CACHE);
       if (!raw) return null;
-      const { ts, data } = JSON.parse(raw);
+      const { ts, ver, data } = JSON.parse(raw);
+
+      // 버전 불일치 → 즉시 파기
+      if (ver !== CACHE_VERSION) {
+        localStorage.removeItem(STORAGE_KEYS.CACHE);
+        return null;
+      }
+      // TTL 만료
       if (Date.now() - ts > CACHE_TTL_MS) {
         localStorage.removeItem(STORAGE_KEYS.CACHE);
         return null;
@@ -225,11 +236,11 @@ window.LottoStorage = (function () {
     }
   }
 
-  function _writePersistedCache(data) {
+  function _writePersistedCache(data, lastUpdated) {
     try {
       localStorage.setItem(
         STORAGE_KEYS.CACHE,
-        JSON.stringify({ ts: Date.now(), data })
+        JSON.stringify({ ts: Date.now(), ver: CACHE_VERSION, lastUpdated: lastUpdated || '', data })
       );
     } catch {
       // 저장 공간 부족 등은 무시

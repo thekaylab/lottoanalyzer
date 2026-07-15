@@ -91,16 +91,33 @@ window.LottoUtils = (function () {
   }
 
   /**
-   * 다음 토요일까지 D-Day 계산 (로또 추첨은 매주 토요일)
+   * 다음 토요일까지 D-Day 계산 (로또 추첨은 매주 토요일 오후 8시 35분)
    * @param   {string} [fromIsoDate] - 기준일 (생략 시 오늘)
    * @returns {string} "D-5", "D-Day", "D+1" 등
    */
   function calcNextDrawDday(fromIsoDate) {
-    const now  = fromIsoDate ? (() => { const [y,m,d]=fromIsoDate.split('-').map(Number); return new Date(y,m-1,d); })() : new Date();
-    const day  = now.getDay(); // 0=일, 6=토
-    const diff = day === 6 ? 0 : (6 - day); // 오늘이 토요일이면 D-Day
+    var now = fromIsoDate
+      ? (function () { var p = fromIsoDate.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); })()
+      : new Date();
+
+    var day  = now.getDay(); // 0=일, 6=토
+    var hour = now.getHours();
+    var min  = now.getMinutes();
+
+    // 토요일 오후 20:35 이후는 이미 추첨 완료 → 다음 주 토요일
+    var drawDone = (day === 6 && (hour > 20 || (hour === 20 && min >= 35)));
+
+    var diff;
+    if (day === 6 && !drawDone) {
+      diff = 0;  // 오늘 토요일 + 추첨 전
+    } else if (drawDone) {
+      diff = 7;  // 추첨 후 다음 주 토요일
+    } else {
+      diff = 6 - day; // 평일 → 이번 주 토요일
+    }
+
     if (diff === 0) return 'D-Day';
-    return `D-${diff}`;
+    return 'D-' + diff;
   }
 
   /**

@@ -3,30 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="LottoLens — AI 기반 로또 번호 분석 및 추천 서비스. 역대 당첨 데이터 통계 분석으로 당신만의 번호를 찾아보세요." />
+  <meta name="description" content="LottoLens — 역대 로또 당첨 데이터를 통계 분석하여 번호를 추천하는 무료 Static Website. 출현 빈도·홀짝·구간 분포를 시각화합니다." />
+  <meta name="keywords" content="로또,로또분석,로또번호추천,lotto,번호분석,당첨번호,통계분석" />
+  <meta name="author" content="Kay Lab" />
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0d0d1a" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://kay-lab.github.io/lottolens/" />
 
   <!-- Open Graph -->
   <meta property="og:title"       content="LottoLens — 로또 번호 분석기" />
-  <meta property="og:description" content="AI 기반 로또 번호 분석 및 추천 서비스" />
+  <meta property="og:description" content="역대 로또 당첨 데이터 통계 분석 및 번호 추천 서비스" />
   <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://kay-lab.github.io/lottolens/" />
+  <meta property="og:image"       content="https://kay-lab.github.io/lottolens/assets/images/og-image.png" />
+  <meta property="og:locale"      content="ko_KR" />
+  <meta property="og:site_name"   content="LottoLens" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="LottoLens — 로또 번호 분석기" />
+  <meta name="twitter:description" content="역대 로또 당첨 데이터 통계 분석 및 번호 추천 서비스" />
+  <meta name="twitter:image"       content="https://kay-lab.github.io/lottolens/assets/images/og-image.png" />
 
   <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎱</text></svg>" />
+  <link rel="icon"             href="assets/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="icon"             href="assets/icons/favicon-32.png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" sizes="180x180" />
 
-  <!-- Google Fonts: Pretendard fallback via Inter -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/responsive.css" />
 
-  <!-- Chart.js (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <!-- Chart.js CDN (defer loading) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
 
-  <title>LottoLens — 로또 번호 분석기</title>
+  <title>LottoLens — 로또 번호 분석기 | Kay Lab</title>
 </head>
 
 <body>
@@ -46,10 +66,12 @@
       <a href="#home" class="logo-link" data-page="home" aria-label="LottoLens 홈">
         <!-- Kay Lab 이미지 로고 -->
         <img
-          src="../kay_lab_logo_transparent.png"
+          src="assets/images/kay_lab_logo_transparent.png"
           alt="Kay Lab"
           class="logo-img logo-img--kaylab"
           loading="eager"
+          width="80"
+          height="32"
         />
         <!-- 구분선 -->
         <span class="logo-divider" aria-hidden="true"></span>
@@ -198,7 +220,7 @@
 
       <!-- 모바일 로고: Kay Lab + LottoLens -->
       <a href="#home" class="mobile-logo" data-page="home" aria-label="LottoLens 홈">
-        <img src="../kay_lab_logo_transparent.png" alt="Kay Lab" class="mobile-logo-img logo-img--kaylab" />
+        <img src="assets/images/kay_lab_logo_transparent.png" alt="Kay Lab" class="mobile-logo-img logo-img--kaylab" width="60" height="24" />
         <span class="mobile-logo-divider" aria-hidden="true"></span>
         <span class="mobile-lottolens" aria-label="LottoLens">
           <span aria-hidden="true">🎱</span>
@@ -782,13 +804,139 @@
         <div class="page-header">
           <div class="page-header-text">
             <h1 class="page-title">번호 분석</h1>
-            <p class="page-subtitle">역대 당첨 번호의 통계를 상세하게 분석합니다</p>
+            <p class="page-subtitle">역대 당첨 데이터를 기반으로 한 다차원 종합 분석 지표</p>
+          </div>
+          <!-- 분석 범위 선택 -->
+          <div class="stats-range-group" role="group" aria-label="분석 범위">
+            <button class="analysis-range-btn active" data-range="0">전체</button>
+            <button class="analysis-range-btn" data-range="50">50회</button>
+            <button class="analysis-range-btn" data-range="30">30회</button>
+            <button class="analysis-range-btn" data-range="10">10회</button>
           </div>
         </div>
-        <div class="coming-soon-card">
-          <div class="coming-icon" aria-hidden="true">📊</div>
-          <h2 class="coming-title">상세 분석 기능 준비 중</h2>
-          <p class="coming-desc">다음 개발 단계에서 구현됩니다.<br>빈도 히트맵, 트렌드 차트, 연속번호 패턴 분석을 제공할 예정입니다.</p>
+
+        <div class="analysis-dashboard-grid">
+
+          <!-- 1. 기본 대표 통계 지표 -->
+          <article class="card analysis-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--purple">🔢</span>
+                <h2 class="card-title">기본 대표 지표</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="basic-stats-grid">
+                <div class="basic-stat-item">
+                  <span class="bstat-label">평균값</span>
+                  <strong id="an-stat-mean" class="bstat-val">—</strong>
+                  <span class="bstat-desc">당첨번호 6개 평균</span>
+                </div>
+                <div class="basic-stat-item">
+                  <span class="bstat-label">중앙값</span>
+                  <strong id="an-stat-median" class="bstat-val">—</strong>
+                  <span class="bstat-desc">크기 순 정렬 시 가운데값</span>
+                </div>
+                <div class="basic-stat-item">
+                  <span class="bstat-label">평균 합계</span>
+                  <strong id="an-stat-sum-avg" class="bstat-val">—</strong>
+                  <span class="bstat-desc">번호 합계의 평균</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2. 미출현 번호 분석 -->
+          <article class="card analysis-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--blue">❄️</span>
+                <h2 class="card-title">미출현 번호</h2>
+              </div>
+              <span class="card-badge" id="an-missing-badge">0개</span>
+            </div>
+            <div class="card-body">
+              <div class="missing-panel">
+                <div class="missing-scroll-area">
+                  <div id="an-missing-list" class="missing-balls-grid"></div>
+                </div>
+                <div class="longest-absent-box">
+                  <span class="longest-label">⏳ 최장 미출현 번호</span>
+                  <div id="an-longest-absent" class="longest-val-display">—</div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3. 홀짝 & 저고 상세 비율 -->
+          <article class="card analysis-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--gold">⚖️</span>
+                <h2 class="card-title">홀짝 / 저고 분포</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="ratio-details">
+                <div class="ratio-detail-item">
+                  <span class="rdetail-label">홀수 대 짝수 비율</span>
+                  <div class="ratio-progress-container">
+                    <div id="an-ratio-odd-bar" class="ratio-bar-filled" style="width: 50%;"></div>
+                  </div>
+                  <div class="ratio-labels">
+                    <span id="an-ratio-odd-txt">홀 50%</span>
+                    <span id="an-ratio-even-txt">짝 50%</span>
+                  </div>
+                </div>
+                <div class="ratio-detail-item">
+                  <span class="rdetail-label">저번호 대 고번호 비율 (22 이하 / 23 이상)</span>
+                  <div class="ratio-progress-container ratio-progress-container--high">
+                    <div id="an-ratio-low-bar" class="ratio-bar-filled" style="width: 50%;"></div>
+                  </div>
+                  <div class="ratio-labels">
+                    <span id="an-ratio-low-txt">저 50%</span>
+                    <span id="an-ratio-high-txt">고 50%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4. 고급 패턴 분석 (AC값 & 연속번호) -->
+          <article class="card analysis-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-icon card-icon--green">🧩</span>
+                <h2 class="card-title">고급 패턴 지표</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="pattern-details">
+                <div class="pattern-stat-row">
+                  <div class="pstat-info">
+                    <span class="pstat-title">평균 AC값 (Arithmetic Complexity)</span>
+                    <span class="pstat-desc">번호 조합의 산술적 복잡도 (일반 수치: 7~10)</span>
+                  </div>
+                  <strong id="an-pattern-ac" class="pstat-val">—</strong>
+                </div>
+                <div class="pattern-stat-row">
+                  <div class="pstat-info">
+                    <span class="pstat-title">연속번호 출현 빈도</span>
+                    <span class="pstat-desc">번호가 연속하여 등장한 쌍의 총 개수</span>
+                  </div>
+                  <strong id="an-pattern-consecutive" class="pstat-val">—</strong>
+                </div>
+                <div class="pattern-stat-row">
+                  <div class="pstat-info">
+                    <span class="pstat-title">동일 끝수 출현 빈도</span>
+                    <span class="pstat-desc">일의 자리 숫자가 같은 당첨번호쌍의 총 개수</span>
+                  </div>
+                  <strong id="an-pattern-same-digit" class="pstat-val">—</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
         </div>
       </section>
 
@@ -1164,7 +1312,7 @@
         <div class="footer-brand">
           <!-- 푸터 듀얼 로고 -->
           <div class="footer-logo-row">
-            <img src="../kay_lab_logo_transparent.png" alt="Kay Lab" class="footer-logo footer-logo--kaylab" loading="lazy" />
+            <img src="assets/images/kay_lab_logo_transparent.png" alt="Kay Lab" class="footer-logo footer-logo--kaylab" loading="lazy" width="80" height="32" />
             <span class="footer-logo-divider" aria-hidden="true"></span>
             <span class="footer-lottolens" aria-label="LottoLens">
               <span aria-hidden="true">🎱</span>
@@ -1186,7 +1334,7 @@
             </div>
             <div class="footer-info-row">
               <dt>버전</dt>
-              <dd>v1.0.0 (2025.01)</dd>
+              <dd>v1.2.0 (2026.07)</dd>
             </div>
           </dl>
         </div>
@@ -1214,7 +1362,7 @@
           ⚠️ 이 서비스는 통계 분석 목적으로만 제공되며, 당첨을 보장하지 않습니다.
           과도한 복권 구매는 삼가주세요.
         </p>
-        <p class="footer-copy">© 2025 Kay Lab · LottoLens. All rights reserved.</p>
+        <p class="footer-copy">© 2026 Kay Lab · LottoLens. All rights reserved.</p>
       </div>
     </footer>
     <!-- /FOOTER -->
@@ -1282,13 +1430,14 @@
   <!-- JavaScript
        로드 순서: utils.js → storage.js → analysis.js → prediction.js → chart.js → recommend.js → app.js
        type="module" 미사용 → file:// 프로토콜에서도 CORS 없이 동작 -->
-  <script src="js/utils.js"      defer></script>
-  <script src="js/storage.js"    defer></script>
-  <script src="js/analysis.js"   defer></script>
-  <script src="js/prediction.js" defer></script>
-  <script src="js/chart.js"      defer></script>
-  <script src="js/recommend.js"  defer></script>
-  <script src="js/app.js"        defer></script>
+  <script src="js/utils.js"          defer></script>
+  <script src="js/storage.js"        defer></script>
+  <script src="js/analysis.js"       defer></script>
+  <script src="js/analysis-page.js"  defer></script>
+  <script src="js/prediction.js"     defer></script>
+  <script src="js/chart.js"          defer></script>
+  <script src="js/recommend.js"      defer></script>
+  <script src="js/app.js"            defer></script>
 
 
 </body>

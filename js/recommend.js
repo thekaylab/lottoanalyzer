@@ -568,21 +568,8 @@ window.LottoRecommend = (function () {
     }
 
     var options = { pinned: _state.pinned.slice(), excluded: _state.excluded.slice(), count: _state.setCount };
-    var result;
-
-    try {
-      switch (_state.algorithm) {
-        case 'random':    result = Pred.generateRandom(options);              break;
-        case 'frequency': result = Pred.generateFrequency(_data, options);    break;
-        case 'absent':    result = Pred.generateAbsent(_data, options);       break;
-        case 'balanced':  result = Pred.generateBalanced(_data, options);     break;
-        default:          result = Pred.generateAIMix(_data, options);        break;
-      }
-    } catch (e) {
-      console.error('[Recommend] 생성 오류:', e);
-      _toast('번호 생성 중 오류가 발생했습니다.', 'error');
-      return;
-    }
+    var result  = _runAlgo(options);
+    if (!result) return;
 
     _state.results = result.sets;
     _renderResults(result.sets);
@@ -611,23 +598,36 @@ window.LottoRecommend = (function () {
 
   /** 개별 세트 재생성 */
   function _regenSet(idx) {
-    var Pred = window.LottoPrediction;
-    if (!Pred || !_state.results) return;
-
+    if (!_state.results) return;
     var options = { pinned: _state.pinned.slice(), excluded: _state.excluded.slice(), count: 1 };
-    var result;
-    try {
-      switch (_state.algorithm) {
-        case 'random':    result = Pred.generateRandom(options);              break;
-        case 'frequency': result = Pred.generateFrequency(_data, options);    break;
-        case 'absent':    result = Pred.generateAbsent(_data, options);       break;
-        case 'balanced':  result = Pred.generateBalanced(_data, options);     break;
-        default:          result = Pred.generateAIMix(_data, options);        break;
-      }
-    } catch (e) { return; }
-
+    var result  = _runAlgo(options);
+    if (!result) return;
     _state.results[idx] = result.sets[0];
     _renderResults(_state.results);
+  }
+
+  /**
+   * 현재 알고리즘을 options로 실행하고 결과를 반환한다.
+   * _generate, _regenSet 에서 공통으로 사용.
+   * @param {{pinned:number[], excluded:number[], count:number}} options
+   * @returns {Object|null} 결과 객체 또는 오류 시 null
+   */
+  function _runAlgo(options) {
+    var Pred = window.LottoPrediction;
+    if (!Pred) { _toast('추천 모듈을 찾을 수 없습니다.', 'error'); return null; }
+    try {
+      switch (_state.algorithm) {
+        case 'random':    return Pred.generateRandom(options);
+        case 'frequency': return Pred.generateFrequency(_data, options);
+        case 'absent':    return Pred.generateAbsent(_data, options);
+        case 'balanced':  return Pred.generateBalanced(_data, options);
+        default:          return Pred.generateAIMix(_data, options);
+      }
+    } catch (e) {
+      console.error('[Recommend] 알고리즘 실행 오류:', e);
+      _toast('번호 생성 중 오류가 발생했습니다.', 'error');
+      return null;
+    }
   }
 
 

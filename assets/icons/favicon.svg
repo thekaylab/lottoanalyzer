@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <!-- 배경 원 -->
+  <circle cx="32" cy="32" r="30" fill="url(#bg)"/>
+  <!-- 볼 흰 점 패턴 (풀볼 스타일) -->
+  <circle cx="32" cy="32" r="18" fill="white" opacity="0.15"/>
+  <!-- 숫자 L (LottoLens) -->
+  <text
+    x="32" y="42"
+    text-anchor="middle"
+    font-family="Inter, Arial, sans-serif"
+    font-size="28"
+    font-weight="800"
+    fill="white"
+    letter-spacing="-1"
+  >L</text>
+  <!-- 하이라이트 -->
+  <circle cx="22" cy="22" r="5" fill="white" opacity="0.25"/>
+</svg>

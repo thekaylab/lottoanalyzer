@@ -8,12 +8,25 @@ from datetime import datetime
 # 파일 경로 설정
 target_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'lotto.json')
 
-def fetch_round(round_num):
-    url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
+def fetch_round(round_num, vercel_base_url=""):
+    # Vercel 릴레이 주소가 있으면 우선 사용, 없으면 동행복권 직접 호출
+    if vercel_base_url:
+        url = f"{vercel_base_url.rstrip('/')}/api/lotto?drwNo={round_num}"
+    else:
+        url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
+
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
-        with urllib.request.urlopen(req, timeout=5) as response:
-            data = response.read().decode('utf-8')
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest'
+        })
+        with urllib.request.urlopen(req, timeout=8) as response:
+            data = response.read().decode('utf-8', errors='ignore')
+            if not data.strip().startswith('{'):
+                print(f"[Warning] Round {round_num}: Response is not JSON (Blocked by dhlottery WAF or HTML returned).")
+                return None
+
             res = json.loads(data)
             if res.get('returnValue') == 'success':
                 numbers = [
@@ -62,19 +75,25 @@ def main():
     next_round = latest_saved_round + 1
     new_records = []
     
+    # Vercel 릴레이 URL (환경변수 또는 하드코딩 지원)
+    vercel_url = os.environ.get("VERCEL_RELAY_URL", "").strip()
+    if vercel_url:
+        print(f"Using Vercel relay URL: {vercel_url}")
+
     while True:
         print(f"Checking round {next_round}...")
-        res = fetch_round(next_round)
+        res = fetch_round(next_round, vercel_url)
         if res:
             new_records.append(res)
             print(f"-> Round {next_round} success: {res['numbers']} / bonus {res['bonus']}")
             next_round += 1
             time.sleep(0.5) # API 부하 방지
         else:
-            print(f"-> Round {next_round} result not available yet. Ending update check.")
+            print(f"-> Round {next_round} result not available yet or blocked. Ending update check.")
             break
             
     # 3. 새로운 데이터가 있는 경우 갱신
+    github_output = os.environ.get('GITHUB_OUTPUT')
     if new_records:
         new_records.sort(key=lambda x: x['round'], reverse=True)
         updated_data = new_records + current_data
@@ -86,10 +105,15 @@ def main():
             json.dump(lotto_data, f, ensure_ascii=False, indent=2)
             
         print(f"Success! {len(new_records)} new rounds updated. (Latest: {new_records[0]['round']})")
-        print("::set-output name=updated::true")
+        if github_output:
+            with open(github_output, 'a') as fh:
+                print("updated=true", file=fh)
     else:
         print("Already up to date. No updates needed.")
-        print("::set-output name=updated::false")
+        if github_output:
+            with open(github_output, 'a') as fh:
+                print("updated=false", file=fh)
+
 
 if __name__ == '__main__':
     main()

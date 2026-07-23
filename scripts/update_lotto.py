@@ -75,8 +75,9 @@ def main():
     next_round = latest_saved_round + 1
     new_records = []
     
-    # Vercel 릴레이 URL (환경변수 또는 하드코딩 지원)
-    vercel_url = os.environ.get("VERCEL_RELAY_URL", "").strip()
+    # Vercel 릴레이 URL (기본값: https://lottoanalyzer-rho.vercel.app)
+    DEFAULT_VERCEL_URL = "https://lottoanalyzer-rho.vercel.app"
+    vercel_url = os.environ.get("VERCEL_RELAY_URL", DEFAULT_VERCEL_URL).strip()
     if vercel_url:
         print(f"Using Vercel relay URL: {vercel_url}")
 

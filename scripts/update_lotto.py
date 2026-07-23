@@ -9,11 +9,11 @@ from datetime import datetime
 target_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'lotto.json')
 
 def fetch_round(round_num, vercel_base_url=""):
-    # Vercel 릴레이 주소가 있으면 우선 사용, 없으면 동행복권 직접 호출
+    ts = int(time.time() * 1000)
     if vercel_base_url:
         url = f"{vercel_base_url.rstrip('/')}/api/lotto?drwNo={round_num}"
     else:
-        url = f"https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo={round_num}"
+        url = f"https://www.dhlottery.co.kr/lt645/selectPstLt645Info.do?srchLtEpsd={round_num}&_={ts}"
 
     try:
         req = urllib.request.Request(url, headers={
@@ -22,22 +22,19 @@ def fetch_round(round_num, vercel_base_url=""):
             'X-Requested-With': 'XMLHttpRequest'
         })
         with urllib.request.urlopen(req, timeout=8) as response:
-            data = response.read().decode('utf-8', errors='ignore')
-            if not data.strip().startswith('{'):
-                print(f"[Warning] Round {round_num}: Response is not JSON (Blocked by dhlottery WAF or HTML returned).")
+            data_str = response.read().decode('utf-8', errors='ignore')
+            if not data_str.strip().startswith('{'):
+                print(f"[Warning] Round {round_num}: Response is not JSON (Blocked or unavailable).")
                 return None
 
-            res = json.loads(data)
+            res = json.loads(data_str)
+
+            # 1. 레거시/Vercel 릴레이 변환 JSON 포맷인 경우
             if res.get('returnValue') == 'success':
-                numbers = [
-                    res.get('drwtNo1'),
-                    res.get('drwtNo2'),
-                    res.get('drwtNo3'),
-                    res.get('drwtNo4'),
-                    res.get('drwtNo5'),
-                    res.get('drwtNo6')
-                ]
-                numbers = sorted([int(n) for n in numbers])
+                numbers = sorted([
+                    int(res.get('drwtNo1')), int(res.get('drwtNo2')), int(res.get('drwtNo3')),
+                    int(res.get('drwtNo4')), int(res.get('drwtNo5')), int(res.get('drwtNo6'))
+                ])
                 return {
                     "round": int(res.get('drwNo')),
                     "date": res.get('drwNoDate'),
@@ -47,9 +44,31 @@ def fetch_round(round_num, vercel_base_url=""):
                     "winners": int(res.get('firstPrzwnerCo', 0)),
                     "sales": int(res.get('totSellamnt', 0))
                 }
+
+            # 2. 동행복권 2026 신규 API 응답 구조 (data.list[0]) 인 경우
+            if res.get('data') and res['data'].get('list') and len(res['data']['list']) > 0:
+                item = res['data']['list'][0]
+                numbers = sorted([
+                    int(item.get('tm1WnNo')), int(item.get('tm2WnNo')), int(item.get('tm3WnNo')),
+                    int(item.get('tm4WnNo')), int(item.get('tm5WnNo')), int(item.get('tm6WnNo'))
+                ])
+                raw_date = str(item.get('ltRflYmd', ''))
+                formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}" if len(raw_date) == 8 else raw_date
+
+                return {
+                    "round": int(item.get('ltEpsd')),
+                    "date": formatted_date,
+                    "numbers": numbers,
+                    "bonus": int(item.get('bnsWnNo')),
+                    "prize": int(item.get('rnk1WnAmt', 0)),
+                    "winners": int(item.get('rnk1WnNope', 0)),
+                    "sales": int(item.get('wholEpsdSumNtslAmt', 0))
+                }
+
     except Exception as e:
         print(f"[Error] Failed to fetch round {round_num}: {e}")
     return None
+
 
 def main():
     print("[GitHub Actions] Checking for lotto data updates...")

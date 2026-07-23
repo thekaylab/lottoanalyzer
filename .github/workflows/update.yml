@@ -37,6 +37,7 @@ jobs:
           if [ -n "$(git status --porcelain data/lotto.json)" ]; then
             git add data/lotto.json
             git commit -m "Auto-update: Lotto data updated to latest round [skip ci]"
+            git pull --rebase origin main
             git push origin main
           else
             echo "변경사항이 없습니다."

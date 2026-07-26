@@ -124,6 +124,26 @@ def main():
         with open(target_file_path, 'w', encoding='utf-8') as f:
             json.dump(lotto_data, f, ensure_ascii=False, indent=2)
             
+        # js/storage.js 의 CACHE_VERSION 자동 무효화 및 갱신
+        storage_path = os.path.join(os.path.dirname(__file__), '..', 'js', 'storage.js')
+        if os.path.exists(storage_path):
+            try:
+                with open(storage_path, 'r', encoding='utf-8') as sf:
+                    s_content = sf.read()
+                
+                import re
+                m = re.search(r"CACHE_VERSION\s*=\s*'([\d\.]+)'", s_content)
+                if m:
+                    old_ver = m.group(1)
+                    parts = old_ver.split('.')
+                    new_ver = f"{parts[0]}.{int(parts[1]) + 1}"
+                    s_content = s_content.replace(f"CACHE_VERSION = '{old_ver}'", f"CACHE_VERSION = '{new_ver}'")
+                    with open(storage_path, 'w', encoding='utf-8') as sf:
+                        sf.write(s_content)
+                    print(f"[Cache] Updated CACHE_VERSION in storage.js: {old_ver} -> {new_ver}")
+            except Exception as ce:
+                print(f"[Warning] Failed to update CACHE_VERSION in storage.js: {ce}")
+
         print(f"Success! {len(new_records)} new rounds updated. (Latest: {new_records[0]['round']})")
         if github_output:
             with open(github_output, 'a') as fh:

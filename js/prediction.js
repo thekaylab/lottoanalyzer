@@ -156,12 +156,22 @@ window.LottoPrediction = (function () {
     else if (low === 1 || low === 5) score += 4;
     score += _coveredRanges(nums) * 6;
     score += _uniqueLastDigits(nums) * 4;
+
+    // AC (Arithmetic Complexity, 산술 복잡도) 검증 필터 (7~10 황금 구간)
+    if (window.LottoAnalysis && window.LottoAnalysis.calcAC) {
+      var acVal = window.LottoAnalysis.calcAC(nums).ac;
+      if (acVal >= 7 && acVal <= 10) score += 20;
+      else if (acVal >= 5 && acVal <= 6) score += 8;
+      else score -= 15;
+    }
+
     var consec = _consecutivePairs(nums);
     if (consec === 1) score += 5;
     else if (consec === 2) score += 2;
     else if (consec >= 3) score -= 20;
     return score;
   }
+
 
   function _calcFreqFallback(data, limit) {
     var slice = (limit > 0) ? data.slice(0, limit) : data;
@@ -365,6 +375,8 @@ window.LottoPrediction = (function () {
     var o    = _resolveOptions(options);
     var pool = _buildPool(o);
 
+    var A = window.LottoAnalysis;
+    var coMatrix = (A && A.calcCoOccurrenceMatrix) ? A.calcCoOccurrenceMatrix(data, 0) : null;
     var perNumScores = _computePerNumberScores(data, pool);
 
     // pool 내 번호만 가중치
@@ -377,10 +389,10 @@ window.LottoPrediction = (function () {
     var sets = [];
     for (var s = 0; s < o.count; s++) {
       var best = null, bestTotal = -Infinity;
-      for (var attempt = 0; attempt < 100; attempt++) {
+      for (var attempt = 0; attempt < 120; attempt++) {
         var picked = _weightedSample(weights, 6 - o.pinned.length);
         var nums   = _finalizeSet(picked, o.pinned);
-        var total  = _balanceScore(nums) + _aiBonus(nums, perNumScores);
+        var total  = _balanceScore(nums) + _aiBonus(nums, perNumScores, coMatrix);
         if (total > bestTotal) { bestTotal = total; best = nums; }
       }
       sets.push({ numbers: best, reason: _reasonAIMix(best, perNumScores, o.pinned) });
@@ -389,41 +401,76 @@ window.LottoPrediction = (function () {
   }
 
   /**
-   * 각 번호의 복합 점수를 계산한다. pool 내 번호만 포함.
+   * 각 번호의 복합 점수를 계산한다 (이월수 및 최근 트렌드 가중치 포함)
    */
   function _computePerNumberScores(data, pool) {
     var A = window.LottoAnalysis;
     var freqAll    = A ? A.calcFrequency(data, 0)  : _calcFreqFallback(data, 0);
     var maxFreqAll = Math.max.apply(null, Array.from(freqAll.values())) || 1;
-    var freqRecent    = A ? A.calcFrequency(data, 10) : _calcFreqFallback(data, 10);
+    var freqRecent    = A ? A.calcFrequency(data, 15) : _calcFreqFallback(data, 15);
     var maxFreqRecent = Math.max.apply(null, Array.from(freqRecent.values())) || 1;
     var absentList = A ? A.calcLongestAbsent(data) : _calcAbsentFallback(data);
     var absentMap  = new Map(absentList.map(function (a) { return [a.number, a.absentFor]; }));
     var maxAbsent  = Math.max.apply(null, Array.from(absentMap.values())) || 1;
 
+    // 직전 회차 당첨 번호 (이월수 가중치)
+    var lastRoundNums = (data && data.length > 0) ? data[0].numbers : [];
+
     var result = new Map();
     (pool || ALL_NUMBERS).forEach(function (n) {
-      var freqScore   = (freqAll.get(n)    || 0) / maxFreqAll;
-      var recentScore = (freqRecent.get(n) || 0) / maxFreqRecent;
-      var absentScore = (absentMap.get(n)  || 0) / maxAbsent;
-      var composite   = freqScore * 0.30 + recentScore * 0.25 + absentScore * 0.20 + 0.25;
-      result.set(n, { composite: composite, freqCount: freqAll.get(n) || 0, absentFor: absentMap.get(n) || 0 });
+      var freqScore    = (freqAll.get(n)    || 0) / maxFreqAll;
+      var recentScore  = (freqRecent.get(n) || 0) / maxFreqRecent;
+      var absentScore  = (absentMap.get(n)  || 0) / maxAbsent;
+      var isCarryover  = lastRoundNums.indexOf(n) !== -1;
+      var carryBonus   = isCarryover ? 0.25 : 0;
+
+      var composite   = freqScore * 0.25 + recentScore * 0.25 + absentScore * 0.15 + carryBonus + 0.10;
+      result.set(n, {
+        composite: composite,
+        freqCount: freqAll.get(n) || 0,
+        absentFor: absentMap.get(n) || 0,
+        isCarryover: isCarryover
+      });
     });
     return result;
   }
 
-  function _aiBonus(nums, perNumScores) {
+  function _aiBonus(nums, perNumScores, coMatrix) {
     var bonus = 0;
     nums.forEach(function (n) {
       var s = perNumScores.get(n);
       if (s) bonus += s.composite * 15;
     });
     bonus += _uniqueLastDigits(nums) * 5;
+
+    // 1. 궁합수(동시 출현 빈도 행렬) 점수 산출
+    if (coMatrix) {
+      var pairScore = 0;
+      for (var i = 0; i < nums.length - 1; i++) {
+        for (var j = i + 1; j < nums.length; j++) {
+          var pairKey = nums[i] + '-' + nums[j];
+          pairScore += (coMatrix.get(pairKey) || 0);
+        }
+      }
+      bonus += Math.min(pairScore * 0.2, 25); // 최대 +25점
+    }
+
+    // 2. 이월수 황금 비율 보너스 (직전 회차 번호 1~2개 포함 시 +12점)
+    var carryCount = nums.filter(function (n) {
+      var s = perNumScores.get(n);
+      return s && s.isCarryover;
+    }).length;
+
+    if (carryCount === 1 || carryCount === 2) bonus += 12;
+    else if (carryCount >= 4) bonus -= 15;
+
     var consec = _consecutivePairs(nums);
     if (consec === 1 || consec === 2) bonus += 8;
     else if (consec >= 4) bonus -= 20;
+
     return bonus;
   }
+
 
 
   // ─────────────────────────────────────────────────────────────

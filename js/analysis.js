@@ -813,43 +813,60 @@ window.LottoAnalysis = (function () {
   // ─────────────────────────────────────────────────────────────
   // 공개 API
   // ─────────────────────────────────────────────────────────────
+  // 13. 궁합수(동시 출현) 및 이월수 분석
+  function calcCoOccurrenceMatrix(data, limit) {
+    var slice = _slice(data, limit);
+    var matrix = new Map();
+    slice.forEach(function (round) {
+      var nums = round.numbers.slice().sort(function (a, b) { return a - b; });
+      for (var i = 0; i < nums.length - 1; i++) {
+        for (var j = i + 1; j < nums.length; j++) {
+          var key = nums[i] + '-' + nums[j];
+          matrix.set(key, (matrix.get(key) || 0) + 1);
+        }
+      }
+    });
+    return matrix;
+  }
+
+  function calcFollowerStats(data) {
+    if (!data || data.length < 2) return { carryoverRate: 0.6 };
+    var carryoverRounds = 0;
+    for (var i = 0; i < data.length - 1; i++) {
+      var matches = data[i].numbers.filter(function (n) { return data[i + 1].numbers.indexOf(n) !== -1; });
+      if (matches.length > 0) carryoverRounds++;
+    }
+    return { carryoverRate: Math.round((carryoverRounds / (data.length - 1)) * 100) / 100 };
+  }
+
   return {
-    // 빈도
     calcFrequency:        calcFrequency,
     calcFrequencyByRange: calcFrequencyByRange,
-    // 미출현
     calcMissingNumbers: calcMissingNumbers,
     calcLongestAbsent:  calcLongestAbsent,
-    // 홀짝
     calcOddEvenRatio:   calcOddEvenRatio,
     calcOddEvenStats:   calcOddEvenStats,
-    // 저고
     calcLowHighRatio:   calcLowHighRatio,
     calcLowHighStats:   calcLowHighStats,
-    // 합계
     calcSum:      calcSum,
     calcSumStats: calcSumStats,
-    // 평균 / 중앙값
     calcMean:   calcMean,
     calcMedian: calcMedian,
-    // 끝수
     calcLastDigit:      calcLastDigit,
     calcLastDigitStats: calcLastDigitStats,
-    // 구간
     calcRangeDistribution: calcRangeDistribution,
     calcRangeStats:        calcRangeStats,
-    // 연속번호
     calcConsecutive:      calcConsecutive,
     calcConsecutiveStats: calcConsecutiveStats,
-    // 동일 끝수
     calcSameLastDigit:      calcSameLastDigit,
     calcSameLastDigitStats: calcSameLastDigitStats,
-    // AC값
     calcAC:      calcAC,
     calcACStats: calcACStats,
-    // 종합
+    calcCoOccurrenceMatrix: calcCoOccurrenceMatrix,
+    calcFollowerStats:      calcFollowerStats,
     analyzeRound: analyzeRound,
     analyzeAll:   analyzeAll,
   };
+
 
 })();

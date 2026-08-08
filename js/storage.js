@@ -34,7 +34,7 @@ window.LottoStorage = (function () {
   };
 
   /** 캐시 버전: JSON을 업데이트할 때마다 올려 이전 캐시를 자동 무효화한다 */
-  const CACHE_VERSION = '1.7';
+  const CACHE_VERSION = '1.8';
 
   /** 캐시 유효 시간 (밀리초): 1시간 */
   const CACHE_TTL_MS = 60 * 60 * 1000;
